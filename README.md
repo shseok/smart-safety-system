@@ -26,7 +26,7 @@
 1. 각 파이에서 make를 해준다
 2. 감지파이
 ```
-./detect 
+./detect {port for 안내파이}{port for 관리자파이}
 ```
 3. 관리자파이
 ```
