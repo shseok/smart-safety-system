@@ -223,7 +223,8 @@ void *receive_thd()
 
 void *camera_thd()
 {
-    system(cmd);
+    // system(cmd);
+    system("sudo raspistill -t 1000 -o /home/pi/Pictures/test.jpg");
 }
 
 int main(int argc, char *argv[]) // 주소, 포트1, 포트2
@@ -240,8 +241,6 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
     char malfunction1[5] = "01";
     char malfunction2[5] = "10";
 
-    int camera_work = 0;
-
     int thr_id;
 
     char *tmp_buffer = "kill -9";
@@ -256,7 +255,7 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
     // ------------------------LED----------------------
     if (-1 == GPIOExport(POUT)) //Enable GPIO pins
     {
-        usleep(300000);
+        sleep(3);
         return (1);
     }
 
@@ -331,6 +330,7 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
     while (1)
     {
         is_on = 0;
+        light = 0;
         strcpy(prev_state, r_msg);
 
         if (strncmp(prev_state, r_msg, 3) == 0)
@@ -350,7 +350,7 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
 
         if (is_on)
         {
-            camera_work = 1;
+            GPIOWrite(POUT, light); // 위험감지시 불 켜짐
 
             pthread_create(&p_thread[2], NULL, camera_thd, NULL);
             char **command = (char **)malloc(sizeof(char *) * 10);
@@ -358,7 +358,8 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
             command[1] = "/home/pi/Pictures/test.jpg";
             command[2] = NULL;
 
-            sleep(8);
+            // sleep(8);
+            sleep(3);
             pid = fork();
             if (pid == 0)
             {
@@ -391,12 +392,10 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
 
     }*/
         printf("is_on = %d\n", is_on);
-        printf("camara_work = %d\n", camera_work);
 
         printf("GPIORead : %d from pin %d\n", GPIORead(PIN), PIN);
 
-        GPIOWrite(POUT, light); // 위험감지시 불 켜짐 (오작동시 켜지도록 해야하나)
-        usleep(500000);         // 0.1마다 repeat이 0이 될 때까지 계속 읽음
+        usleep(500000); // 0.5마다 repeat이 0이 될 때까지 계속 읽음
     }
 
     // thread_stop();
