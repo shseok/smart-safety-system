@@ -198,13 +198,13 @@ void *send_thd()
         state = GPIORead(PIN);
         if (state == 0 && prev_state == 1) // press
         {
-            
+
             write(clnt_sock, "1", 1);
             printf("msg = %s\n", w_msg);
             camera_work = 0;
-            
         }
-        else{
+        else
+        {
             write(clnt_sock, "0", 1);
         }
         prev_state = state;
@@ -221,7 +221,8 @@ void *receive_thd()
     }
 }
 
-void *camera_thd(){
+void *camera_thd()
+{
     system(cmd);
 }
 
@@ -243,8 +244,6 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
 
     int thr_id;
 
-    
-
     char *tmp_buffer = "kill -9";
     pid_t pid; /* process id */
 
@@ -256,13 +255,16 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
 
     // ------------------------LED----------------------
     if (-1 == GPIOExport(POUT)) //Enable GPIO pins
+    {
+        usleep(300000);
         return (1);
+    }
 
     if (-1 == GPIODirection(POUT, OUT)) //Set GPIO directions
         return (2);
 
     // ------------------------Button----------------------
-    if (-1 == GPIOExport(POUT2) || -1 == GPIOExport(PIN))
+    if (-1 == GPIOExport(POUT2) || -1 == GPIOExport(PIN)) // usleep 추가
         return (1);
 
     if (-1 == GPIODirection(POUT2, OUT) || -1 == GPIODirection(PIN, IN))
@@ -303,7 +305,7 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
     if (listen(serv_sock, 5) == -1) // listen
         error_handling("listen() error");
     sleep(1);
-    
+
     if (clnt_sock < 0)
     {
         clnt_addr_size = sizeof(clnt_addr);
@@ -311,7 +313,7 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
         if (clnt_sock == -1)
             error_handling("accept() error");
     }
-    
+
     thr_id = pthread_create(&p_thread[0], NULL, send_thd, NULL);
     if (thr_id < 0)
     {
@@ -349,17 +351,19 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
         if (is_on)
         {
             camera_work = 1;
-            
+
             pthread_create(&p_thread[2], NULL, camera_thd, NULL);
-            char** command = (char**)malloc(sizeof(char *) * 10);
+            char **command = (char **)malloc(sizeof(char *) * 10);
             command[0] = "xdg-open";
             command[1] = "/home/pi/Pictures/test.jpg";
             command[2] = NULL;
-            
+
             sleep(8);
             pid = fork();
-            if(pid == 0){
-                if(execvp(command[0], command) == -1 ){
+            if (pid == 0)
+            {
+                if (execvp(command[0], command) == -1)
+                {
                     printf("Error in Camera!\n");
                 }
             }
@@ -389,7 +393,7 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
         printf("is_on = %d\n", is_on);
         printf("camara_work = %d\n", camera_work);
 
-        printf("GPIORead : %d from pin %d\n", GPIORead(PIN),     PIN);
+        printf("GPIORead : %d from pin %d\n", GPIORead(PIN), PIN);
 
         GPIOWrite(POUT, light); // 위험감지시 불 켜짐 (오작동시 켜지도록 해야하나)
         usleep(500000);         // 0.1마다 repeat이 0이 될 때까지 계속 읽음
@@ -397,10 +401,10 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
 
     // thread_stop();
     int status;
-    pthread_join(p_thread[0], (void**)&status);
-    pthread_join(p_thread[1], (void**)&status);
-    pthread_join(p_thread[2], (void**)&status);
-    
+    pthread_join(p_thread[0], (void **)&status);
+    pthread_join(p_thread[1], (void **)&status);
+    pthread_join(p_thread[2], (void **)&status);
+
     close(clnt_sock);
     close(serv_sock);
     close(sock);
