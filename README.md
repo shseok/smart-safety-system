@@ -53,7 +53,6 @@
 
 # 고려해야할 사항
 - 관리자 파이: 프로세스를 만들고 스트리밍 방식으로 활용하려 했으나 프로세스가 죽지 않는 문제점 (따라서, 현재는 사진을 일정 간격으로 확인함으로 대체)
-    - 더불어, button export 아래 3초 정도 sleep 추가
 
 # ref
 http://www.3demp.com/community/boardDetails.php?cbID=233
