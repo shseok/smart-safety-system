@@ -258,12 +258,16 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
         return (1);
     }
 
+    sleep(1);
+
     if (-1 == GPIODirection(POUT, OUT)) //Set GPIO directions
         return (2);
 
     // ------------------------Button----------------------
     if (-1 == GPIOExport(POUT2) || -1 == GPIOExport(PIN)) // usleep 추가
         return (1);
+
+    sleep(1);
 
     if (-1 == GPIODirection(POUT2, OUT) || -1 == GPIODirection(PIN, IN))
         return (2);
