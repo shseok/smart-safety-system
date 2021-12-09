@@ -255,7 +255,6 @@ int main(int argc, char *argv[]) // 주소, 포트1, 포트2
     // ------------------------LED----------------------
     if (-1 == GPIOExport(POUT)) //Enable GPIO pins
     {
-        sleep(3);
         return (1);
     }
 
